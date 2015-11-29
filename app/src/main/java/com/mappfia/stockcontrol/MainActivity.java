@@ -2,12 +2,88 @@ package com.mappfia.stockcontrol;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private StockAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final EditText quantityField = (EditText) findViewById(R.id.quantityField);
+        final EditText priceField = (EditText) findViewById(R.id.priceField);
+        priceField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    String quantity = quantityField.getText().toString();
+                    String price = priceField.getText().toString();
+                    if (price.isEmpty()) {
+                        priceField.setError("Cannot be empty");
+                        return true;
+                    } else if (quantity.isEmpty()) {
+                        quantityField.setError("Cannot be empty");
+                        return true;
+                    }
+                    saveEntry(Integer.parseInt(quantity), Integer.parseInt(price));
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        ListView stockList = (ListView) findViewById(R.id.stockList);
+        mAdapter = new StockAdapter(this);
+        stockList.setAdapter(mAdapter);
+        populateList();
+    }
+
+    private void saveEntry(int quantity, int price) {
+        ParseObject stock = new ParseObject("Stock");
+        stock.put("quantity", quantity);
+        stock.put("price", price);
+        stock.pinInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    populateList();
+                } else {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void populateList() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Stock");
+        query.fromLocalDatastore();
+        query.orderByAscending("createdAt");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> stocks, ParseException e) {
+                if (e == null) {
+                    mAdapter.clear();
+                    mAdapter.addAll(stocks);
+                } else {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
