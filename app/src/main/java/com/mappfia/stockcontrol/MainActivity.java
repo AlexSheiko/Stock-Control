@@ -1,8 +1,10 @@
 package com.mappfia.stockcontrol;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -21,6 +23,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE_EDIT = 101;
+    private static final int REQUEST_CODE_EXPORT = 102;
     private StockAdapter mAdapter;
 
     @Override
@@ -103,5 +107,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void export(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_EXPORT);
     }
 }

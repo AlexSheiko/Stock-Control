@@ -10,7 +10,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.mappfia.stockcontrol.MainActivity">
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -49,8 +49,6 @@
 
         <ListView
             android:id="@+id/stockList"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
             android:divider="@null"
             tools:listitem="@layout/list_item_stock"
             android:layout_width="match_parent"
@@ -89,7 +87,8 @@
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Export"/>
+                android:text="Export"
+                android:onClick="export"/>
 
         </LinearLayout>
 

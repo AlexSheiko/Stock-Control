@@ -4,6 +4,9 @@
               android:layout_height="wrap_content"
               android:paddingTop="6dp"
               android:paddingBottom="8dp"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:clickable="false"
               android:orientation="horizontal">
 
     <TextView
