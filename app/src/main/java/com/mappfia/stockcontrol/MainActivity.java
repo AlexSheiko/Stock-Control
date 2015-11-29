@@ -93,12 +93,13 @@ public class MainActivity extends AppCompatActivity {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> stocks, ParseException e) {
-                if (e == null) {
+                if (stocks.size() > 0) {
                     Collections.reverse(stocks);
                     mAdapter.clear();
                     mAdapter.addAll(stocks);
-                } else {
-                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    findViewById(R.id.editButton).setEnabled(true);
+                    findViewById(R.id.exportButton).setEnabled(true);
                 }
             }
         });
