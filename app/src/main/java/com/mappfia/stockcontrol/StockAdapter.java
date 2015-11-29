@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import com.parse.ParseObject;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class StockAdapter extends ArrayAdapter<ParseObject> {
 
     public StockAdapter(Context context) {
@@ -28,10 +31,12 @@ public class StockAdapter extends ArrayAdapter<ParseObject> {
         ParseObject stock = getItem(position);
 
         TextView quantityLabel = (TextView) rootView.findViewById(R.id.quantity);
-        quantityLabel.setText(String.valueOf(stock.getInt("quantity")));
+        NumberFormat formatter = NumberFormat.getInstance(Locale.UK);
+        quantityLabel.setText(formatter.format(stock.getInt("quantity")));
 
         TextView priceLabel = (TextView) rootView.findViewById(R.id.price);
-        priceLabel.setText(String.valueOf(stock.getInt("price")));
+        formatter = NumberFormat.getCurrencyInstance(Locale.UK);
+        priceLabel.setText(formatter.format(stock.getInt("price")));
 
         return rootView;
     }

@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
                     hideKeyboard();
                     priceField.setText("");
                     quantityField.setText("");
-                    quantityField.requestFocus();
                     return true;
                 }
                 return false;
