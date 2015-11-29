@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
         final EditText priceField = (EditText) findViewById(R.id.priceField);
         priceField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE ||
+                        enterPressed(event)) {
                     String quantity = quantityField.getText().toString();
                     String price = priceField.getText().toString();
                     if (price.isEmpty()) {
@@ -42,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                     saveEntry(Integer.parseInt(quantity), Integer.parseInt(price));
+                    hideKeyboard();
+                    priceField.setText("");
+                    quantityField.setText("");
+                    quantityField.requestFocus();
                     return true;
                 }
                 return false;
@@ -52,6 +59,16 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new StockAdapter(this);
         stockList.setAdapter(mAdapter);
         populateList();
+    }
+
+    private boolean enterPressed(KeyEvent event) {
+        return event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                && event.getAction() == KeyEvent.ACTION_DOWN;
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
     private void saveEntry(int quantity, int price) {
@@ -73,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
     private void populateList() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Stock");
         query.fromLocalDatastore();
-        query.orderByAscending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> stocks, ParseException e) {
                 if (e == null) {
+                    Collections.reverse(stocks);
                     mAdapter.clear();
                     mAdapter.addAll(stocks);
                 } else {
