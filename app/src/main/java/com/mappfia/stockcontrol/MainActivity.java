@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         ListView stockList = (ListView) findViewById(R.id.stockList);
         mAdapter = new StockAdapter(this);
         stockList.setAdapter(mAdapter);
+        stockList.setEmptyView(findViewById(android.R.id.empty));
         populateList();
     }
 

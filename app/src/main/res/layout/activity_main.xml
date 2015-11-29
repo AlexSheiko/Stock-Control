@@ -56,6 +56,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@android:id/empty"
+            android:layout_marginTop="12dp"
+            android:textColor="#4d000000"
+            android:text="No stocks yet"/>
+
     </LinearLayout>
 
     <LinearLayout
