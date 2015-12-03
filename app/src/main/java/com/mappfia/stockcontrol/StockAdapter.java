@@ -36,7 +36,7 @@ public class StockAdapter extends ArrayAdapter<ParseObject> {
 
         TextView priceLabel = (TextView) rootView.findViewById(R.id.price);
         formatter = NumberFormat.getCurrencyInstance(Locale.UK);
-        priceLabel.setText(formatter.format(stock.getInt("price")));
+        priceLabel.setText(formatter.format(stock.getNumber("price")));
 
         return rootView;
     }

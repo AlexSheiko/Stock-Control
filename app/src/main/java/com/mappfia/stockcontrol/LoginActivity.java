@@ -55,7 +55,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean enterPressed(KeyEvent event) {
-        return event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+        return event != null
+                && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                 && event.getAction() == KeyEvent.ACTION_DOWN;
     }
 

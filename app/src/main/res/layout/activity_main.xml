@@ -99,7 +99,8 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="#FFF"
-        android:gravity="center"
+        android:gravity="center_horizontal"
+        android:paddingTop="40dp"
         android:elevation="2dp"
         android:paddingBottom="56dp"
         android:orientation="vertical">
@@ -113,13 +114,15 @@
             <TextView
                 android:layout_width="140dp"
                 android:layout_height="wrap_content"
+                android:singleLine="true"
                 android:layout_marginRight="16dp"
                 android:text="Quantity"
-                android:textSize="36sp"/>
+                android:textSize="32sp"/>
 
             <EditText
                 android:id="@+id/quantityField"
                 android:layout_width="190dp"
+                android:singleLine="true"
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:background="@drawable/edittext_background"
@@ -130,7 +133,7 @@
                 android:paddingBottom="8dp"
                 android:maxLength="7"
                 android:hint="Items"
-                android:textSize="36sp"/>
+                android:textSize="32sp"/>
 
         </LinearLayout>
 
@@ -144,13 +147,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="16dp"
                 android:text="Price"
-                android:textSize="36sp"/>
+                android:singleLine="true"
+                android:textSize="32sp"/>
 
             <EditText
                 android:id="@+id/priceField"
                 android:layout_width="190dp"
                 android:layout_height="wrap_content"
-                android:inputType="number"
+                android:inputType="numberDecimal"
                 android:maxLength="10"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
@@ -158,8 +162,9 @@
                 android:paddingBottom="8dp"
                 android:background="@drawable/edittext_background"
                 android:textColorHint="#2a000000"
+                android:singleLine="true"
                 android:hint="£"
-                android:textSize="36sp"/>
+                android:textSize="32sp"/>
 
         </LinearLayout>
 

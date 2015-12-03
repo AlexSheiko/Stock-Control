@@ -1,8 +1,11 @@
 package com.mappfia.stockcontrol;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -12,12 +15,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.session.AppKeyPair;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +34,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_EDIT = 101;
     private static final int REQUEST_CODE_EXPORT = 102;
+
+    final static private String APP_KEY = "60l8q30so9udvpj";
+    final static private String APP_SECRET = "1tzhvf1qxmu04tc";
+    private DropboxAPI<AndroidAuthSession> mDBApi;
+
     private StockAdapter mAdapter;
 
     @Override
@@ -48,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                         quantityField.setError("Cannot be empty");
                         return true;
                     }
-                    saveEntry(Integer.parseInt(quantity), Integer.parseInt(price));
+                    saveEntry(Integer.parseInt(quantity), Float.parseFloat(price));
                     hideKeyboard();
                     priceField.setText("");
                     quantityField.setText("");
@@ -66,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean enterPressed(KeyEvent event) {
-        return event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+        return event != null
+                && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                 && event.getAction() == KeyEvent.ACTION_DOWN;
     }
 
@@ -75,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void saveEntry(int quantity, int price) {
+    private void saveEntry(int quantity, float price) {
         ParseObject stock = new ParseObject("Stock");
         stock.put("quantity", quantity);
         stock.put("price", price);
@@ -112,5 +127,91 @@ public class MainActivity extends AppCompatActivity {
     public void export(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivityForResult(intent, REQUEST_CODE_EXPORT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_EDIT) {
+                // todo add edit activity
+            } else if (requestCode == REQUEST_CODE_EXPORT) {
+                shareDropbox();
+            }
+        }
+    }
+
+    private void shareDropbox() {
+        AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
+        AndroidAuthSession session = new AndroidAuthSession(appKeys);
+        mDBApi = new DropboxAPI<>(session);
+        mDBApi.getSession().startOAuth2Authentication(this);
+    }
+
+    protected void onResume() {
+        super.onResume();
+
+        if (mDBApi != null && mDBApi.getSession().authenticationSuccessful()) {
+            try {
+                // Required to complete auth, sets the access token on the session
+                mDBApi.getSession().finishAuthentication();
+
+                String accessToken = mDBApi.getSession().getOAuth2AccessToken();
+                new ExportQuotesTask().execute();
+            } catch (IllegalStateException e) {
+                Log.i("DbAuthLog", "Error authenticating", e);
+            }
+        }
+    }
+
+    private File getStockFile() {
+        File file = new File(getFilesDir() + "/Stocks.csv");
+        return file;
+    }
+
+    private class ExportQuotesTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Toast.makeText(MainActivity.this, "Uploading file...", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                createStockFile();
+                File file = getStockFile();
+                FileInputStream inputStream = new FileInputStream(file);
+                DropboxAPI.Entry response = mDBApi.putFile("/Stocks.csv", inputStream,
+                        file.length(), null, null);
+                Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(MainActivity.this, "Successfully uploaded", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void createStockFile() throws Exception {
+        String csv = "";
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Stock");
+        query.fromLocalDatastore();
+        List<ParseObject> stocks = query.find();
+        for (ParseObject stock : stocks) {
+            csv += stock.getInt("quantity") + "," + stock.getNumber("price") + "\n";
+        }
+
+        FileOutputStream outputStream;
+
+        outputStream = openFileOutput("Stocks.csv", Context.MODE_PRIVATE);
+        outputStream.write(csv.getBytes());
+        outputStream.close();
     }
 }
