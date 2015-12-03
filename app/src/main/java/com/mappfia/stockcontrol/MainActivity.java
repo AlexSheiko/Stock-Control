@@ -2,8 +2,10 @@ package com.mappfia.stockcontrol;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private DropboxAPI<AndroidAuthSession> mDBApi;
 
     private StockAdapter mAdapter;
+    private SharedPreferences mPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
         stockList.setAdapter(mAdapter);
         stockList.setEmptyView(findViewById(android.R.id.empty));
         populateList();
+
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     private boolean enterPressed(KeyEvent event) {
@@ -143,20 +149,29 @@ public class MainActivity extends AppCompatActivity {
 
     private void shareDropbox() {
         AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
-        AndroidAuthSession session = new AndroidAuthSession(appKeys);
-        mDBApi = new DropboxAPI<>(session);
-        mDBApi.getSession().startOAuth2Authentication(this);
+
+        String token = mPrefs.getString("token", null);
+        if (token != null) {
+            AndroidAuthSession session = new AndroidAuthSession(appKeys, token);
+            mDBApi = new DropboxAPI<>(session);
+            new ExportQuotesTask().execute();
+        } else {
+            AndroidAuthSession session = new AndroidAuthSession(appKeys);
+            mDBApi = new DropboxAPI<>(session);
+            mDBApi.getSession().startOAuth2Authentication(this);
+        }
     }
 
     protected void onResume() {
         super.onResume();
 
-        if (mDBApi != null && mDBApi.getSession().authenticationSuccessful()) {
+        if (mDBApi != null && mDBApi.getSession() != null && mDBApi.getSession().authenticationSuccessful()) {
             try {
                 // Required to complete auth, sets the access token on the session
                 mDBApi.getSession().finishAuthentication();
 
                 String accessToken = mDBApi.getSession().getOAuth2AccessToken();
+                mPrefs.edit().putString("token", accessToken).apply();
                 new ExportQuotesTask().execute();
             } catch (IllegalStateException e) {
                 Log.i("DbAuthLog", "Error authenticating", e);
