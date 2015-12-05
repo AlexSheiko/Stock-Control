@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -29,20 +30,22 @@ import com.parse.SaveCallback;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_EDIT = 101;
-    private static final int REQUEST_CODE_EXPORT = 102;
 
-    final static private String APP_KEY = "60l8q30so9udvpj";
-    final static private String APP_SECRET = "1tzhvf1qxmu04tc";
+    final static private String APP_KEY = "kt9dk46uf0uxcov";
+    final static private String APP_SECRET = "jxtjwoxq3mc7rtw";
     private DropboxAPI<AndroidAuthSession> mDBApi;
 
     private StockAdapter mAdapter;
     private SharedPreferences mPrefs;
+    private boolean mUpload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
         stockList.setEmptyView(findViewById(android.R.id.empty));
         populateList();
 
+
+        ((TextView) findViewById(R.id.idLabel)).setText("Device ID: " + getDeviceId());
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
@@ -130,9 +135,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void export(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivityForResult(intent, REQUEST_CODE_EXPORT);
+    public void onClickExport(View view) {
+        shareDropbox();
+    }
+
+    public void onClickEdit(View view) {
+        startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_CODE_EDIT);
     }
 
     @Override
@@ -140,9 +148,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_CODE_EDIT) {
-                // todo add edit activity
-            } else if (requestCode == REQUEST_CODE_EXPORT) {
-                shareDropbox();
+                startActivity(new Intent(this, EditActivity.class));
             }
         }
     }
@@ -158,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             AndroidAuthSession session = new AndroidAuthSession(appKeys);
             mDBApi = new DropboxAPI<>(session);
+            mUpload = true;
             mDBApi.getSession().startOAuth2Authentication(this);
         }
     }
@@ -165,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (mDBApi != null && mDBApi.getSession() != null && mDBApi.getSession().authenticationSuccessful()) {
+        if (mUpload && mDBApi != null && mDBApi.getSession() != null && mDBApi.getSession().authenticationSuccessful()) {
             try {
                 // Required to complete auth, sets the access token on the session
                 mDBApi.getSession().finishAuthentication();
@@ -184,6 +191,16 @@ public class MainActivity extends AppCompatActivity {
         return file;
     }
 
+    public String getDeviceId() {
+        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).substring(0,6);
+    }
+
+    public String getTimeStamp() {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyyy-kk:mm");
+        return formatter.format(date);
+    }
+
     private class ExportQuotesTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -197,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                 createStockFile();
                 File file = getStockFile();
                 FileInputStream inputStream = new FileInputStream(file);
-                DropboxAPI.Entry response = mDBApi.putFile("/Stocks.csv", inputStream,
+                DropboxAPI.Entry response = mDBApi.putFile("/Stocks-" + getDeviceId() + "-" + getTimeStamp() + ".csv", inputStream,
                         file.length(), null, null);
                 Log.i("DbExampleLog", "The uploaded file's rev is: " + response.rev);
             } catch (Exception e) {

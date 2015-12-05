@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Stock Control</string>
+    <string name="title_activity_edit">Edit</string>
 </resources>

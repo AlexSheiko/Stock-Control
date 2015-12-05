@@ -77,6 +77,7 @@
                 android:layout_width="wrap_content"
                 android:enabled="false"
                 tools:enabled="true"
+                android:onClick="onClickEdit"
                 android:layout_height="wrap_content"
                 android:text="Edit"/>
 
@@ -88,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Export"
-                android:onClick="export"/>
+                android:onClick="onClickExport"/>
 
         </LinearLayout>
 
@@ -167,6 +168,15 @@
                 android:textSize="32sp"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/idLabel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="bottom|right"
+            android:paddingRight="16dp"
+            tools:text="Device ID: 3H54J4"/>
 
     </LinearLayout>
 
