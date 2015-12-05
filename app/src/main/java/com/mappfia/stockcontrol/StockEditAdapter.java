@@ -6,11 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.parse.ParseObject;
-
-import java.text.NumberFormat;
-import java.util.Locale;
 
 public class StockEditAdapter extends ArrayAdapter<ParseObject> {
 
@@ -24,14 +22,13 @@ public class StockEditAdapter extends ArrayAdapter<ParseObject> {
         View rootView = inflater.inflate(R.layout.list_item_stock_edit, parent, false);
 
         ParseObject stock = getItem(position);
+        ((TextView) rootView.findViewById(R.id.positionLabel)).setText((position + 1) + ")");
 
         EditText quantityField = (EditText) rootView.findViewById(R.id.quantityField);
-        NumberFormat formatter = NumberFormat.getInstance(Locale.UK);
-        quantityField.setText(formatter.format(stock.getInt("quantity")));
+        quantityField.setText(stock.getInt("quantity") + "");
 
         EditText priceField = (EditText) rootView.findViewById(R.id.priceField);
-        formatter = NumberFormat.getCurrencyInstance(Locale.UK);
-        priceField.setText(formatter.format(stock.getNumber("price")));
+        priceField.setText(stock.getNumber("price") + "");
 
         return rootView;
     }
