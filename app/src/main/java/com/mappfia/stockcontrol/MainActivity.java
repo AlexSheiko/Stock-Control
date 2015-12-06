@@ -37,7 +37,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE_EDIT = 101;
+    private static final int REQUEST_CODE_LOGIN = 101;
+    private static final int REQUEST_CODE_EDIT = 102;
 
     final static private String APP_KEY = "kt9dk46uf0uxcov";
     final static private String APP_SECRET = "jxtjwoxq3mc7rtw";
@@ -140,15 +141,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickEdit(View view) {
-        startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_CODE_EDIT);
+        startActivityForResult(new Intent(this, LoginActivity.class), REQUEST_CODE_LOGIN);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CODE_EDIT) {
-                startActivity(new Intent(this, EditActivity.class));
+            if (requestCode == REQUEST_CODE_LOGIN) {
+                Intent editIntent = new Intent(this, EditActivity.class);
+                startActivityForResult(editIntent, REQUEST_CODE_EDIT);
+            } else if (requestCode == REQUEST_CODE_EDIT) {
+                populateList();
             }
         }
     }
