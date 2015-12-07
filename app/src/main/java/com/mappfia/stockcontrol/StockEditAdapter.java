@@ -29,7 +29,7 @@ public class StockEditAdapter extends ArrayAdapter<ParseObject> {
         quantityField.setTag("quantity" + position);
 
         EditText priceField = (EditText) rootView.findViewById(R.id.priceField);
-        priceField.setText(Math.round(Float.parseFloat(stock.getNumber("price").toString())) + "");
+        priceField.setText(stock.getNumber("price").toString());
         priceField.setTag("price" + position);
 
         return rootView;
