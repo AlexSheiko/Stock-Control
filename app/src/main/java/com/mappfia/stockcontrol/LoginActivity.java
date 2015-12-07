@@ -3,6 +3,7 @@ package com.mappfia.stockcontrol;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_GO || enterPressed(event)) {
+                    findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
                     String password = passwordField.getText().toString();
                     if (password.isEmpty()) {
                         passwordField.setError("Cannot be empty");
@@ -35,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
                                 setResult(RESULT_OK);
                                 finish();
                             } else {
+                                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
                                 passwordField.selectAll();
                                 passwordField.setError("Password is incorrect");
                             }
