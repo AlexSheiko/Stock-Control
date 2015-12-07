@@ -27,6 +27,8 @@
             android:name=".LoginActivity"
             android:configChanges="orientation|keyboard"
             android:screenOrientation="sensorLandscape"
+            android:noHistory="true"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
             android:label="Login"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -49,7 +51,7 @@
         <activity
             android:name=".EditActivity"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="stateAlwaysVisible"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustPan"
             android:configChanges="orientation|keyboard"
             android:label="@string/title_activity_edit"
             android:parentActivityName=".MainActivity"
