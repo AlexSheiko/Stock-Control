@@ -62,9 +62,11 @@ public class MainActivity extends AppCompatActivity {
                     String quantity = quantityField.getText().toString();
                     String price = priceField.getText().toString();
                     if (price.isEmpty()) {
+                        priceField.requestFocus();
                         priceField.setError("Cannot be empty");
                         return true;
                     } else if (quantity.isEmpty()) {
+                        quantityField.requestFocus();
                         quantityField.setError("Cannot be empty");
                         return true;
                     }
