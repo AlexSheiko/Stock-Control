@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IllegalStateException e) {
                 Log.i("DbAuthLog", "Error authenticating", e);
             }
+            mUpload = false;
         }
     }
 

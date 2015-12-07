@@ -73,6 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:paddingRight="16dp"
+            android:paddingTop="8dp"
             android:orientation="horizontal">
 
             <Button

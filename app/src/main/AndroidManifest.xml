@@ -51,8 +51,8 @@
         <activity
             android:name=".EditActivity"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|keyboard"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
             android:label="@string/title_activity_edit"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme">
