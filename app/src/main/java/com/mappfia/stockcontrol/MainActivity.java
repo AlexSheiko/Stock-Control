@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -70,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                     saveEntry(Integer.parseInt(quantity), Float.parseFloat(price));
-                    hideKeyboard();
                     priceField.setText("");
                     quantityField.setText("");
+                    quantityField.requestFocus();
                     return true;
                 }
                 return false;
@@ -95,11 +94,6 @@ public class MainActivity extends AppCompatActivity {
         return event != null
                 && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                 && event.getAction() == KeyEvent.ACTION_DOWN;
-    }
-
-    private void hideKeyboard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
     }
 
     private void saveEntry(int quantity, float price) {
