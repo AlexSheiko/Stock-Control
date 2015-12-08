@@ -40,7 +40,7 @@
             android:configChanges="orientation|keyboard"
             android:launchMode="singleTask">
             <intent-filter>
-                <data android:scheme="db-kt9dk46uf0uxcov"/>
+                <data android:scheme="db-60l8q30so9udvpj"/>
 
                 <action android:name="android.intent.action.VIEW"/>
 
