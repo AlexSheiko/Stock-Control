@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_LOGIN = 101;
     private static final int REQUEST_CODE_EDIT = 102;
 
-    final static private String APP_KEY = "kt9dk46uf0uxcov";
-    final static private String APP_SECRET = "jxtjwoxq3mc7rtw";
+    final static private String APP_KEY = "60l8q30so9udvpj";
+    final static private String APP_SECRET = "1tzhvf1qxmu04tc";
     private DropboxAPI<AndroidAuthSession> mDBApi;
 
     private StockAdapter mAdapter;
