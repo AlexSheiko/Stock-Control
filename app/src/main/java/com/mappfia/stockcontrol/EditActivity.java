@@ -3,9 +3,12 @@ package com.mappfia.stockcontrol;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -27,20 +30,37 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
-        mAdapter = new StockEditAdapter(this);
-        mListView = (ListView) findViewById(R.id.listView);
-        mListView.setAdapter(mAdapter);
-        mListView.scrollListBy(mListView.getCount() - 1);
+        final LinearLayout containerView = (LinearLayout) findViewById(R.id.listContainer);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Stock");
         query.fromLocalDatastore();
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> quotes, ParseException e) {
-                Collections.reverse(quotes);
-                mAdapter.addAll(quotes);
+            public void done(List<ParseObject> stocks, ParseException e) {
+                Collections.reverse(stocks);
+                for (int i = 0; i < stocks.size(); i++) {
+                    ParseObject stock = stocks.get(i);
+                    containerView.addView(getStockView(stock, i));
+                }
             }
         });
+    }
+
+    private View getStockView(ParseObject stock, int position) {
+        LayoutInflater inflater = getLayoutInflater();
+        View rootView = inflater.inflate(R.layout.list_item_stock_edit, null);
+
+        ((TextView) rootView.findViewById(R.id.positionLabel)).setText((position + 1) + ")");
+
+        EditText quantityField = (EditText) rootView.findViewById(R.id.quantityField);
+        quantityField.setText(stock.getInt("quantity") + "");
+        quantityField.setTag("quantity" + position);
+
+        EditText priceField = (EditText) rootView.findViewById(R.id.priceField);
+        priceField.setText(stock.getNumber("price").toString());
+        priceField.setTag("price" + position);
+
+        return rootView;
     }
 
     public void onClickSave(View view) {

@@ -14,12 +14,25 @@
         android:layout_height="match_parent"
         android:background="#FFF">
 
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/listContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"/>
+
+        </ScrollView>
+
         <ListView
             android:id="@+id/listView"
             xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:divider="@null"
             android:fadeScrollbars="false"
             android:gravity="center_horizontal"
