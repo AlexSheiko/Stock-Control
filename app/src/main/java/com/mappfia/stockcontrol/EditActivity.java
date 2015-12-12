@@ -2,12 +2,10 @@ package com.mappfia.stockcontrol;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,20 +15,20 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class EditActivity extends AppCompatActivity {
 
-    private ListView mListView;
-    private StockEditAdapter mAdapter;
+    private LinearLayout mContainerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
-        final LinearLayout containerView = (LinearLayout) findViewById(R.id.listContainer);
+        mContainerView = (LinearLayout) findViewById(R.id.listContainer);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Stock");
         query.fromLocalDatastore();
@@ -40,7 +38,7 @@ public class EditActivity extends AppCompatActivity {
                 Collections.reverse(stocks);
                 for (int i = 0; i < stocks.size(); i++) {
                     ParseObject stock = stocks.get(i);
-                    containerView.addView(getStockView(stock, i));
+                    mContainerView.addView(getStockView(stock, i));
                 }
             }
         });
@@ -66,31 +64,30 @@ public class EditActivity extends AppCompatActivity {
     public void onClickSave(View view) {
         ParseObject.unpinAllInBackground();
 
-        Log.d("mine", mListView.getChildCount()+"");
-        for (int i = 0; i < mListView.getChildCount(); i++) {
-            EditText quantityField = (EditText) mListView.findViewWithTag("quantity" + i);
-            EditText priceField = (EditText) mListView.findViewWithTag("price" + i);
-                String quantity = quantityField.getText().toString();
-                String price = priceField.getText().toString();
+        List<ParseObject> stocks = new ArrayList<>();
+        for (int i = 0; i < mContainerView.getChildCount(); i++) {
+            EditText quantityField = (EditText) mContainerView.findViewWithTag("quantity" + i);
+            EditText priceField = (EditText) mContainerView.findViewWithTag("price" + i);
+            String quantity = quantityField.getText().toString();
+            String price = priceField.getText().toString();
 
-                ParseObject stock = new ParseObject("Stock");
-                if (!quantity.isEmpty()) {
-                    stock.put("quantity", Integer.parseInt(quantity));
-                }
-                if (!price.isEmpty()) {
-                    stock.put("price", Float.parseFloat(price));
-                }
-                final int finalI = i;
-                stock.pinInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (finalI == (mListView.getChildCount() - 1)) {
-                            Toast.makeText(EditActivity.this, "Saved successfully", Toast.LENGTH_SHORT).show();
-                            setResult(RESULT_OK);
-                            finish();
-                        }
-                    }
-                });
+            ParseObject stock = new ParseObject("Stock");
+            if (!quantity.isEmpty()) {
+                stock.put("quantity", Integer.parseInt(quantity));
+            }
+            if (!price.isEmpty()) {
+                stock.put("price", Float.parseFloat(price));
+            }
+            stocks.add(stock);
         }
+        Collections.reverse(stocks);
+        ParseObject.pinAllInBackground(stocks, new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                Toast.makeText(EditActivity.this, "Saved successfully", Toast.LENGTH_SHORT).show();
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
     }
 }
