@@ -51,11 +51,15 @@ public class EditActivity extends AppCompatActivity {
         ((TextView) rootView.findViewById(R.id.positionLabel)).setText((position + 1) + ")");
 
         EditText quantityField = (EditText) rootView.findViewById(R.id.quantityField);
-        quantityField.setText(stock.getInt("quantity") + "");
+            quantityField.setText(stock.getInt("quantity") + "");
         quantityField.setTag("quantity" + position);
 
         EditText priceField = (EditText) rootView.findViewById(R.id.priceField);
-        priceField.setText(stock.getNumber("price").toString());
+        if (stock.getNumber("price") != null) {
+            priceField.setText(stock.getNumber("price").toString());
+        } else {
+            priceField.setText("0");
+        }
         priceField.setTag("price" + position);
 
         return rootView;

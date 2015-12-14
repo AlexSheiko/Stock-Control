@@ -32,11 +32,19 @@ public class StockAdapter extends ArrayAdapter<ParseObject> {
 
         TextView quantityLabel = (TextView) rootView.findViewById(R.id.quantity);
         NumberFormat formatter = NumberFormat.getInstance(Locale.UK);
-        quantityLabel.setText(formatter.format(stock.getInt("quantity")));
+        try {
+            quantityLabel.setText(formatter.format(stock.getInt("quantity")));
+        } catch (IllegalArgumentException e) {
+            quantityLabel.setText("0");
+        }
 
         TextView priceLabel = (TextView) rootView.findViewById(R.id.price);
         formatter = NumberFormat.getCurrencyInstance(Locale.UK);
+        try {
         priceLabel.setText(formatter.format(stock.getNumber("price")));
+        } catch (IllegalArgumentException e) {
+            priceLabel.setText(formatter.format(0));
+        }
 
         return rootView;
     }
