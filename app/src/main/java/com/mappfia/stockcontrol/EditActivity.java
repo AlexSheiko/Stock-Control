@@ -51,7 +51,7 @@ public class EditActivity extends AppCompatActivity {
         ((TextView) rootView.findViewById(R.id.positionLabel)).setText((position + 1) + ")");
 
         EditText quantityField = (EditText) rootView.findViewById(R.id.quantityField);
-            quantityField.setText(stock.getInt("quantity") + "");
+        quantityField.setText(stock.getInt("quantity") + "");
         quantityField.setTag("quantity" + position);
 
         EditText priceField = (EditText) rootView.findViewById(R.id.priceField);
@@ -82,7 +82,9 @@ public class EditActivity extends AppCompatActivity {
             if (!price.isEmpty()) {
                 stock.put("price", Float.parseFloat(price));
             }
-            stocks.add(stock);
+            if (Integer.parseInt(quantity) > 0 && Float.parseFloat(price) > 0) {
+                stocks.add(stock);
+            }
         }
         Collections.reverse(stocks);
         ParseObject.pinAllInBackground(stocks, new SaveCallback() {
