@@ -82,7 +82,7 @@ public class EditActivity extends AppCompatActivity {
             if (!price.isEmpty()) {
                 stock.put("price", Float.parseFloat(price));
             }
-            if (Integer.parseInt(quantity) > 0 || Float.parseFloat(price) > 0) {
+            if (!quantity.isEmpty() || !price.isEmpty()) {
                 stocks.add(stock);
             }
         }
