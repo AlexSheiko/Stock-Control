@@ -8,10 +8,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseUser;
-
 public class LoginActivity extends AppCompatActivity {
 
     @Override
@@ -30,19 +26,14 @@ public class LoginActivity extends AppCompatActivity {
                         passwordField.setError("Cannot be empty");
                         return true;
                     }
-                    ParseUser.logInInBackground("admin", password, new LogInCallback() {
-                        @Override
-                        public void done(ParseUser user, ParseException e) {
-                            if (user != null) {
-                                setResult(RESULT_OK);
-                                finish();
-                            } else {
-                                findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
-                                passwordField.selectAll();
-                                passwordField.setError("Password is incorrect");
-                            }
-                        }
-                    });
+                    if (password.toLowerCase().equals("grayrabbit")) {
+                        setResult(RESULT_OK);
+                        finish();
+                    } else {
+                        findViewById(R.id.progressBar).setVisibility(View.INVISIBLE);
+                        passwordField.selectAll();
+                        passwordField.setError("Password is incorrect");
+                    }
                     return true;
                 }
                 return false;
